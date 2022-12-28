@@ -1,5 +1,7 @@
 package com.judy.message.message.service.impl;
 
+import com.judy.message.common.response.ListResponse;
+import com.judy.message.common.response.Result;
 import com.judy.message.member.entity.Member;
 import com.judy.message.member.service.MemberService;
 import com.judy.message.message.entity.Message;
@@ -47,16 +49,27 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public ResponseEntity<List<MessageView>> findAllReceivedMessageByMemberSeq(Long seq) {
+    public ResponseEntity<ListResponse<MessageView>> findAllReceivedMessageByMemberSeq(Long seq) {
         List<Message> messageList = messageRepository.findAllReceivedMessageByMemberSeq(seq);
         List<MessageView> messageViews = messageList.stream().map(m -> m.toMessageView()).collect(Collectors.toList());
-        return ResponseEntity.ok(messageViews);
+        ListResponse<MessageView> body = ListResponse.<MessageView>builder()
+                                                        .resultCode(Result.SUCCESS.getResultCode())
+                                                        .resultMessage(Result.SUCCESS.getResultMessage())
+                                                        .list(messageViews)
+                                                        .build();
+        return ResponseEntity.ok(body);
     }
 
     @Override
     public ResponseEntity deleteMessage(Long seq) {
         messageRepository.deleteMessage(seq);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ListResponse<MessageView>> findAllReceivedMessageByNickname(String sessionNickname) {
+        Member sessionMember = memberService.findMemberByNickname(sessionNickname);
+        return findAllReceivedMessageByMemberSeq(sessionMember.getSeq());
     }
 
 }
