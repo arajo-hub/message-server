@@ -1,6 +1,8 @@
 package com.judy.message.member.controller;
 
+import com.judy.message.member.request.MemberJoin;
 import com.judy.message.member.request.MemberLogin;
+import com.judy.message.member.response.MemberView;
 import com.judy.message.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,11 @@ public class MemberController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/member/login";
+    }
+
+    @PostMapping("/join")
+    public ResponseEntity<MemberView> join(@RequestBody MemberJoin memberJoin) {
+        return memberService.join(memberJoin);
     }
 
 }

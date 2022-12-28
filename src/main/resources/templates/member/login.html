@@ -14,8 +14,38 @@
                 <label for="password" class="form-label">비밀번호</label>
                 <input type="password" class="form-control" id="password" name="password">
             </div>
-            <button type="submit" class="btn btn-primary" id="loginBtn">로그인</button>
+            <div class="d-grid gap-2 d-md-block">
+                <button type="submit" class="btn btn-primary" id="loginBtn">로그인</button>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#joinModal">회원가입</button>
+            </div>
         </form>
+    </div>
+
+    <div class="modal fade" id="joinModal" tabindex="-1" aria-labelledby="joinModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="joinModalLabel">회원가입</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="/member/join">
+                        <div class="mb-3">
+                            <label for="joinNickname" class="col-form-label">닉네임</label>
+                            <input type="text" class="form-control" id="joinNickname" name="joinNickname">
+                        </div>
+                        <div class="mb-3">
+                            <label for="joinPassword" class="col-form-label">비밀번호</label>
+                            <input type="password" class="form-control" id="joinPassword" name="joinPassword">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-primary" id="joinBtn">회원가입</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -28,6 +58,7 @@
 
         loginView.init = function () {
             this.loginBtnClick();
+            this.joinBtnClick();
         };
 
         loginView.loginBtnClick = function() {
@@ -64,6 +95,35 @@
                     }
                 })
             });
+
+            loginView.joinBtnClick = function() {
+
+                var that = this;
+
+                $("#joinBtn").click(function (e) {
+
+                    e.preventDefault();
+
+                    var requestParam = JSON.stringify({
+                        nickname: $("#joinNickname").val(),
+                        password: $("#joinPassword").val()
+                    });
+
+                    $.ajax({
+                        url: "/member/join",
+                        type: "POST",
+                        data: requestParam,
+                        dataType: "JSON",
+                        contentType: 'application/json',
+                    })
+                        .success(function () {
+                            $(".btn-close").click();
+                        })
+                        .error(function (result) {
+                            alert("알 수 없는 오류가 발생했습니다.");
+                        })
+                });
+            }
         };
 
     </script>
