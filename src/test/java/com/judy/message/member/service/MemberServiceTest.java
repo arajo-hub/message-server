@@ -42,11 +42,8 @@ class MemberServiceTest {
     @Test
     @DisplayName("닉네임으로 회원정보 조회")
     void findByNickname() {
-        MemberJoin memberJoin = MemberJoin.builder()
-                .nickname("홍길동")
-                .password("test1234")
-                .build();
-        memberService.join(memberJoin);
+        Member member = Member.builder().nickname("홍길동").password("test1234").build();
+        memberRepository.join(member);
 
         String nickname = "홍길동";
         ResponseEntity<MemberView> response = memberService.findByNickname(nickname);
@@ -57,11 +54,8 @@ class MemberServiceTest {
     @Test
     @DisplayName("닉네임으로 회원정보 like 검색")
     void findLikeNickname() {
-        MemberJoin memberJoin = MemberJoin.builder()
-                .nickname("홍길동")
-                .password("test1234")
-                .build();
-        memberService.join(memberJoin);
+        Member member = Member.builder().nickname("홍길동").password("test1234").build();
+        memberRepository.join(member);
 
         String keyword = "길";
         ResponseEntity<List<MemberView>> response = memberService.findLikeNickname(keyword);
