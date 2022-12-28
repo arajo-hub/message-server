@@ -1,5 +1,6 @@
 package com.judy.message.message.service;
 
+import com.judy.message.common.response.ListResponse;
 import com.judy.message.member.entity.Member;
 import com.judy.message.member.repository.MemberRepository;
 import com.judy.message.message.entity.Message;
@@ -99,9 +100,9 @@ class MessageServiceTest {
 
         messageSendList.forEach(m -> messageRepository.send(m));
 
-        ResponseEntity<List<MessageView>> response = messageService.findAllReceivedMessageByMemberSeq(testMembers.get(1).getSeq());
+        ResponseEntity<ListResponse<MessageView>> response = messageService.findAllReceivedMessageByMemberSeq(testMembers.get(1).getSeq());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(messageSendList.size(), response.getBody().size());
+        assertEquals(messageSendList.size(), response.getBody().getList().size());
     }
 
     @Test

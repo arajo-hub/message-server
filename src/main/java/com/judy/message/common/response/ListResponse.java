@@ -10,16 +10,16 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class ListResponse extends BaseResponse {
+public class ListResponse<T> extends BaseResponse {
 
-    private List<Object> list;
+    private List<T> list;
 
     public ListResponse(String resultCode, String resultMessage) {
         super(resultCode, resultMessage);
     }
 
     @Builder
-    public ListResponse(String resultCode, String resultMessage, List<Object> list) {
+    public ListResponse(String resultCode, String resultMessage, List<T> list) {
         super(resultCode, resultMessage);
         this.list = list;
     }

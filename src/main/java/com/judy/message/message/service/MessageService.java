@@ -1,5 +1,6 @@
 package com.judy.message.message.service;
 
+import com.judy.message.common.response.ListResponse;
 import com.judy.message.message.request.MessageSend;
 import com.judy.message.message.response.MessageView;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,9 @@ public interface MessageService {
 
     ResponseEntity<List<MessageView>> findAllSentMessageByMemberSeq(Long seq);
 
-    ResponseEntity<List<MessageView>> findAllReceivedMessageByMemberSeq(Long seq);
+    ResponseEntity<ListResponse<MessageView>> findAllReceivedMessageByMemberSeq(Long seq);
 
     ResponseEntity deleteMessage(Long seq);
+
+    ResponseEntity<ListResponse<MessageView>> findAllReceivedMessageByNickname(String sessionNickname);
 }

@@ -65,7 +65,7 @@
 
             var that = this;
 
-            $("#loginBtn").click(function(e) {
+            $("#loginBtn").click(function (e) {
 
                 e.preventDefault();
 
@@ -75,55 +75,55 @@
                 });
 
                 $.ajax({
-                    url 		: "/member/login",
-                    type 		: "POST",
-                    data 		: requestParam,
-                    dataType 	: "JSON",
+                    url: "/member/login",
+                    type: "POST",
+                    data: requestParam,
+                    dataType: "JSON",
                     contentType: 'application/json',
                 })
-                .success(function() {
-                    window.location = "/message/list";
-                })
-                .error(function(result) {
-                    var response = result.responseJSON;
-                    if (response.resultCode == "404") {
-                        alert("존재하지 않는 사용자입니다.");
-                    } else if (response.resultCode == "WRONG_PASSWORD") {
-                        alert("잘못된 비밀번호입니다.");
-                    } else {
-                        alert("알 수 없는 오류가 발생했습니다.");
-                    }
-                })
-            });
-
-            loginView.joinBtnClick = function() {
-
-                var that = this;
-
-                $("#joinBtn").click(function (e) {
-
-                    e.preventDefault();
-
-                    var requestParam = JSON.stringify({
-                        nickname: $("#joinNickname").val(),
-                        password: $("#joinPassword").val()
-                    });
-
-                    $.ajax({
-                        url: "/member/join",
-                        type: "POST",
-                        data: requestParam,
-                        dataType: "JSON",
-                        contentType: 'application/json',
+                    .success(function () {
+                        window.location = "/message/list";
                     })
-                        .success(function () {
-                            $(".btn-close").click();
-                        })
-                        .error(function (result) {
+                    .error(function (result) {
+                        var response = result.responseJSON;
+                        if (response.resultCode == "404") {
+                            alert("존재하지 않는 사용자입니다.");
+                        } else if (response.resultCode == "WRONG_PASSWORD") {
+                            alert("잘못된 비밀번호입니다.");
+                        } else {
                             alert("알 수 없는 오류가 발생했습니다.");
-                        })
+                        }
+                    })
+            });
+        }
+
+        loginView.joinBtnClick = function() {
+
+            var that = this;
+
+            $("#joinBtn").click(function (e) {
+
+                e.preventDefault();
+
+                var requestParam = JSON.stringify({
+                    nickname: $("#joinNickname").val(),
+                    password: $("#joinPassword").val()
                 });
-            }
+
+                $.ajax({
+                    url: "/member/join",
+                    type: "POST",
+                    data: requestParam,
+                    dataType: "JSON",
+                    contentType: 'application/json',
+                })
+                    .success(function () {
+                        $(".btn-close").click();
+                    })
+                    .error(function (result) {
+                        alert("알 수 없는 오류가 발생했습니다.");
+                    })
+            });
         };
 
     </script>
