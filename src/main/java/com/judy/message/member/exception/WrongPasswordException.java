@@ -1,0 +1,19 @@
+package com.judy.message.member.exception;
+
+
+import com.judy.message.common.exception.MessageServerException;
+
+public class WrongPasswordException extends MessageServerException {
+
+    private static final String MESSAGE = "비밀번호가 일치하지 않습니다.";
+
+    public WrongPasswordException() {
+        super(MESSAGE);
+    }
+
+    @Override
+    public int getStatusCode() {
+        return 400;
+    }
+
+}
