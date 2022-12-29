@@ -1,6 +1,7 @@
 package com.judy.message.message.service;
 
 import com.judy.message.common.response.ListResponse;
+import com.judy.message.common.response.SingleResponse;
 import com.judy.message.message.request.MessageSend;
 import com.judy.message.message.response.MessageView;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface MessageService {
 
-    ResponseEntity<MessageView> sendMessage(MessageSend messageSend);
+    ResponseEntity<SingleResponse> sendMessage(MessageSend messageSend);
 
     ResponseEntity<List<MessageView>> findAllSentMessageByMemberSeq(Long seq);
 

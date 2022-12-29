@@ -7,21 +7,50 @@
 <div class="container">
     <span th:text="${session.nickname}" id="nickname" name="nickname">닉네임</span>
 
-    <div class="row">
-        <div class="col-4">
-            <div class="list-group" id="list-tab" role="tablist">
-                <a class="list-group-item list-group-item-action active" id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">Home</a>
-                <a class="list-group-item list-group-item-action" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">Profile</a>
-                <a class="list-group-item list-group-item-action" id="list-messages-list" data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages">Messages</a>
-                <a class="list-group-item list-group-item-action" id="list-settings-list" data-bs-toggle="list" href="#list-settings" role="tab" aria-controls="list-settings">Settings</a>
-            </div>
-        </div>
-        <div class="col-8">
-            <div class="tab-content" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">...</div>
-                <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">...</div>
-                <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">...</div>
-                <div class="tab-pane fade" id="list-settings" role="tabpanel" aria-labelledby="list-settings-list">...</div>
+    <div class="d-grid gap-2 d-md-block">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#sendModal">메시지 보내기</button>
+    </div>
+
+    <table class="table caption-top">
+        <caption>받은 메시지</caption>
+        <thead>
+        <tr>
+            <th scope="col"><input type="checkbox"></th>
+            <th scope="col">보낸 사람</th>
+            <th scope="col">제목</th>
+            <th scope="col">날짜</th>
+        </tr>
+        </thead>
+        <tbody id="messageSection">
+        <tr>
+            <td colspan="4">메시지를 로딩중입니다.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="sendModal" tabindex="-1" aria-labelledby="joinModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="joinModalLabel">메시지 보내기</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="/member/join">
+                        <div class="mb-3">
+                            <label for="joinNickname" class="col-form-label">닉네임</label>
+                            <input type="text" class="form-control" id="joinNickname" name="joinNickname">
+                        </div>
+                        <div class="mb-3">
+                            <label for="content" class="col-form-label">메시지</label>
+                            <textarea class="form-control" id="content" name="content"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-primary" id="sendBtn">보내기</button>
+                </div>
             </div>
         </div>
     </div>
@@ -36,24 +65,71 @@
 
         listView.init = function () {
             this.list();
+            this.sendBtnClick();
         };
 
         listView.list = function() {
+            setInterval(function() {
+                var that = this;
+
+                $.ajax({
+                    url: "/message/list/" + $("#nickname").text(),
+                    type: "GET",
+                    contentType: 'application/json',
+                })
+                    .success(function (result) {
+                        var html = '';
+                        if (result.list.length == 0) {
+                            return;
+                        }
+                        result.list.forEach((element) => {
+                            html += '<tr';
+                            if (element.readYn == 'NO') {
+                                html += ' style="font-weight:bold";';
+                            }
+                            html += '>';
+                            html += '<td><input type="checkbox" data-seq="' + element.seq + '"></td>' +
+                                '<td>' + element.sender.nickname + '</td>\n' +
+                                '<td>' + element.content + '</td>\n' +
+                                '<td>' + element.sendDatetime + '</td></tr>';
+                        });
+                        $("#messageSection").html(html);
+                    })
+                    .error(function (result) {
+                        alert("알 수 없는 오류가 발생했습니다.");
+                    })
+            }, 1000);
+        };
+
+        listView.sendBtnClick = function() {
 
             var that = this;
 
-            $.ajax({
-                url: "/message/list/" + $("#nickname").text(),
-                type: "GET",
-                contentType: 'application/json',
-            })
-            .success(function (result) {
-                console.log(result)
-            })
-            .error(function (result) {
-                alert("알 수 없는 오류가 발생했습니다.");
-            })
-        };
+            $("#sendBtn").click(function (e) {
+
+                e.preventDefault();
+
+                var requestParam = JSON.stringify({
+                    sender: $("#nickname").text(),
+                    recipient: $("#recipient").val(),
+                    content: $("#content").val()
+                });
+
+                $.ajax({
+                    url: "/message/send",
+                    type: "POST",
+                    data: requestParam,
+                    dataType: "JSON",
+                    contentType: 'application/json',
+                })
+                    .success(function () {
+                        window.location = "/message/list";
+                    })
+                    .error(function () {
+                        alert("알 수 없는 오류가 발생했습니다.");
+                    })
+            });
+        }
 
     </script>
 

@@ -1,6 +1,7 @@
 package com.judy.message.message.service;
 
 import com.judy.message.common.response.ListResponse;
+import com.judy.message.common.response.SingleResponse;
 import com.judy.message.member.entity.Member;
 import com.judy.message.member.repository.MemberRepository;
 import com.judy.message.message.entity.Message;
@@ -18,6 +19,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,10 +64,10 @@ class MessageServiceTest {
                 .sender("홍길동")
                 .recipient("이순신")
                 .build();
-        ResponseEntity<MessageView> response = messageService.sendMessage(messageSend);
-
+        ResponseEntity<SingleResponse> response = messageService.sendMessage(messageSend);
+        SingleResponse message = (SingleResponse) response.getBody();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(messageSend.getContent(), response.getBody().getContent());
+        assertEquals(messageSend.getContent(), ((MessageView) message.getData()).getContent());
     }
 
     @Test
@@ -76,26 +78,31 @@ class MessageServiceTest {
                 .content("테스트 메시지입니다.")
                 .sender(testMembers.get(0))
                 .recipient(testMembers.get(1))
+                .sendDatetime(LocalDateTime.now())
                 .build());
         messageSendList.add(Message.builder()
                 .content("테스트 메시지입니다.")
                 .sender(testMembers.get(0))
                 .recipient(testMembers.get(1))
+                .sendDatetime(LocalDateTime.now())
                 .build());
         messageSendList.add(Message.builder()
                 .content("테스트 메시지입니다.")
                 .sender(testMembers.get(0))
                 .recipient(testMembers.get(1))
+                .sendDatetime(LocalDateTime.now())
                 .build());
         messageSendList.add(Message.builder()
                 .content("테스트 메시지입니다.")
                 .sender(testMembers.get(0))
                 .recipient(testMembers.get(1))
+                .sendDatetime(LocalDateTime.now())
                 .build());
         messageSendList.add(Message.builder()
                 .content("테스트 메시지입니다.")
                 .sender(testMembers.get(0))
                 .recipient(testMembers.get(1))
+                .sendDatetime(LocalDateTime.now())
                 .build());
 
         messageSendList.forEach(m -> messageRepository.send(m));
@@ -113,26 +120,31 @@ class MessageServiceTest {
                 .content("테스트 메시지입니다.")
                 .sender(testMembers.get(0))
                 .recipient(testMembers.get(1))
+                .sendDatetime(LocalDateTime.now())
                 .build());
         messageSendList.add(Message.builder()
                 .content("테스트 메시지입니다.")
                 .sender(testMembers.get(0))
                 .recipient(testMembers.get(1))
+                .sendDatetime(LocalDateTime.now())
                 .build());
         messageSendList.add(Message.builder()
                 .content("테스트 메시지입니다.")
                 .sender(testMembers.get(0))
                 .recipient(testMembers.get(1))
+                .sendDatetime(LocalDateTime.now())
                 .build());
         messageSendList.add(Message.builder()
                 .content("테스트 메시지입니다.")
                 .sender(testMembers.get(0))
                 .recipient(testMembers.get(1))
+                .sendDatetime(LocalDateTime.now())
                 .build());
         messageSendList.add(Message.builder()
                 .content("테스트 메시지입니다.")
                 .sender(testMembers.get(0))
                 .recipient(testMembers.get(1))
+                .sendDatetime(LocalDateTime.now())
                 .build());
 
         messageSendList.forEach(m -> messageRepository.send(m));

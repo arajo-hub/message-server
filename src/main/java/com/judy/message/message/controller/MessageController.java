@@ -1,15 +1,14 @@
 package com.judy.message.message.controller;
 
 import com.judy.message.common.response.ListResponse;
+import com.judy.message.common.response.SingleResponse;
 import com.judy.message.member.response.MemberView;
+import com.judy.message.message.request.MessageSend;
 import com.judy.message.message.response.MessageView;
 import com.judy.message.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -30,6 +29,11 @@ public class MessageController {
             throw new IllegalAccessException();
         }
         return messageService.findAllReceivedMessageByNickname(sessionNickname);
+    }
+
+    @PostMapping("/send")
+    public ResponseEntity<SingleResponse> send(@RequestBody MessageSend messageSend) {
+        return messageService.sendMessage(messageSend);
     }
 
 }
