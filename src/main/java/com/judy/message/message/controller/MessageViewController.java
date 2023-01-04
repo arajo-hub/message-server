@@ -1,5 +1,6 @@
 package com.judy.message.message.controller;
 
+import org.springframework.ui.Model;
 import com.judy.message.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,9 @@ public class MessageViewController {
     private final MessageService messageService;
 
     @GetMapping("/list")
-    private String list() {
+    private String list(Model model) {
+        model.addAttribute("page", 1);
+        model.addAttribute("size", 20);
         return "message/list";
     }
 

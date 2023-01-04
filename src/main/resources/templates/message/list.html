@@ -7,6 +7,9 @@
 <div class="container">
     <span th:text="${session.nickname}" id="nickname" name="nickname">닉네임</span>
 
+    <input type="hidden" id="page" name="page" th:value="${page}">
+    <input type="hidden" id="size" name="size" th:value="${size}">
+
     <div class="d-grid gap-2 d-md-block">
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#sendModal">메시지 보내기</button>
     </div>
@@ -28,6 +31,9 @@
         </tbody>
     </table>
 
+    <nav aria-label="Page navigation example">
+        <ul class="pagination" id="pagination"></ul>
+    </nav>
     <div class="modal fade" id="sendModal" tabindex="-1" aria-labelledby="joinModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -66,39 +72,63 @@
         listView.init = function () {
             this.list();
             this.sendBtnClick();
+            this.changePage();
+            this.interval();
         };
 
-        listView.list = function() {
-            setInterval(function() {
-                var that = this;
+        listView.interval = function() {
+            // setInterval(() => this.list(), 2000);
+        }
 
-                $.ajax({
-                    url: "/message/list/" + $("#nickname").text(),
-                    type: "GET",
-                    contentType: 'application/json',
-                })
-                    .success(function (result) {
-                        var html = '';
-                        if (result.list.length == 0) {
-                            return;
+        listView.list = function() {
+            var that = this;
+
+            var requestParam = JSON.stringify({
+                page: $("#page").val(),
+                size: $("#size").val(),
+            });
+
+            $.ajax({
+                url: "/message/list",
+                type: "POST",
+                data: requestParam,
+                dataType: "JSON",
+                contentType: 'application/json',
+            })
+                .success(function (result) {
+                    var html = '';
+                    if (result.content.length == 0) {
+                        return;
+                    }
+                    result.content.forEach((element) => {
+                        html += '<tr';
+                        if (element.readYn == 'NO') {
+                            html += ' style="font-weight:bold";';
                         }
-                        result.list.forEach((element) => {
-                            html += '<tr';
-                            if (element.readYn == 'NO') {
-                                html += ' style="font-weight:bold";';
-                            }
-                            html += '>';
-                            html += '<td><input type="checkbox" data-seq="' + element.seq + '"></td>' +
-                                '<td>' + element.sender.nickname + '</td>\n' +
-                                '<td>' + element.content + '</td>\n' +
-                                '<td>' + element.sendDatetime + '</td></tr>';
-                        });
-                        $("#messageSection").html(html);
-                    })
-                    .error(function (result) {
-                        alert("알 수 없는 오류가 발생했습니다.");
-                    })
-            }, 1000);
+                        html += '>';
+                        html += '<td><input type="checkbox" data-seq="' + element.seq + '"></td>' +
+                            '<td>' + element.sender.nickname + '</td>\n' +
+                            '<td>' + element.content + '</td>\n' +
+                            '<td>' + element.sendDatetime + '</td></tr>';
+                    });
+
+                    var page = '';
+                    for (var i = 0; i < result.totalPages; i++) {
+                        if (requestParam.page == (i + 1)) {
+                            page += '<li class="page-item">'
+                                + '<a class="page-link" href="#">' + (i + 1) + '</a>'
+                                + '</li>';
+                        } else {
+                            page += '<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>';
+                        }
+                    }
+
+                    $("#messageSection").html(html);
+                    $("ul#pagination").html(page);
+                })
+                .error(function (result) {
+                    alert("알 수 없는 오류가 발생했습니다.");
+                })
         };
 
         listView.sendBtnClick = function() {
@@ -130,6 +160,14 @@
                     })
             });
         }
+
+        listView.changePage = function() {
+            var that = this;
+            $(document).on('click', '#pagination > li > a', function(e) {
+                $("#page").val(e.currentTarget.innerHTML);
+                that.list();
+            });
+        };
 
     </script>
 

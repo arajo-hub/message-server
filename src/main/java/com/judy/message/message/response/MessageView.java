@@ -23,7 +23,7 @@ public class MessageView {
     public MessageView(String content, MemberView sender, LocalDateTime sendDatetime, ReadYn readYn) {
         this.content = (content.length() > CONTENT_MAX_SIZE) ? String.format("%s...", content.substring(0, CONTENT_MAX_SIZE)) : content;
         this.sender = sender;
-        this.sendDatetime = sendDatetime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
+        this.sendDatetime = sendDatetime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.readYn = readYn;
     }
 

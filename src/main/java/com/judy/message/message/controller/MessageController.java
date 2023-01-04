@@ -2,19 +2,23 @@ package com.judy.message.message.controller;
 
 import com.judy.message.common.response.ListResponse;
 import com.judy.message.common.response.SingleResponse;
-import com.judy.message.member.response.MemberView;
+import com.judy.message.message.request.MessageSearch;
 import com.judy.message.message.request.MessageSend;
 import com.judy.message.message.response.MessageView;
 import com.judy.message.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 import static com.judy.message.common.code.CommonCode.SESSION_MEMBER_KEY;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/message")
@@ -22,13 +26,14 @@ public class MessageController {
 
     private final MessageService messageService;
 
-    @GetMapping("/list/{nickname}")
-    public ResponseEntity<ListResponse<MessageView>> list(HttpSession session, @PathVariable String nickname) throws IllegalAccessException {
+    @PostMapping("/list")
+    public ResponseEntity<Page<MessageView>> list(HttpSession session, @RequestBody MessageSearch messageSearch) throws IllegalAccessException {
+        long start = System.currentTimeMillis();
+        Pageable pageable = PageRequest.of(messageSearch.getPage() - 1, messageSearch.getSize());
         String sessionNickname = (String) session.getAttribute(SESSION_MEMBER_KEY);
-        if (!sessionNickname.equals(nickname)) {
-            throw new IllegalAccessException();
-        }
-        return messageService.findAllReceivedMessageByNickname(sessionNickname);
+        ResponseEntity<Page<MessageView>> result = messageService.findPagesReceivedMessageByNickname(sessionNickname, pageable);
+        log.info("{}ms 소요", System.currentTimeMillis() - start);
+        return result;
     }
 
     @PostMapping("/send")
