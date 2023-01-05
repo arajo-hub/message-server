@@ -24,4 +24,6 @@ public interface MessageService {
 
     ResponseEntity<Page<MessageView>> findPagesReceivedMessageByNickname(String nickname, Pageable pageable);
 
+    ResponseEntity<Page<MessageView>> getNewMessage(Long seq);
+
 }

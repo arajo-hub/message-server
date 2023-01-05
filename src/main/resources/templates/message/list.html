@@ -61,12 +61,53 @@
         </div>
     </div>
 
+    <!-- toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast" style="display:none;" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Bootstrap</strong>
+                <small>11 mins ago</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="newMessage">
+                새 메시지가 도착했습니다.
+            </div>
+        </div>
+    </div>
+
+    <!-- 메시지 상세 -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
 
         $(() => listView.init());
 
         var listView = {
-
         };
 
         listView.init = function () {
@@ -74,10 +115,47 @@
             this.sendBtnClick();
             this.changePage();
             this.interval();
+
+            var lastMessageSeq;
         };
 
         listView.interval = function() {
-            // setInterval(() => this.list(), 2000);
+            setInterval(() => this.getNewMessages(), 1000);
+        }
+
+        listView.getNewMessages = function() {
+
+            var that = this;
+
+            var requestParam = JSON.stringify({
+                seq: that.lastMessageSeq,
+            });
+
+            $.ajax({
+                url: "/message/getNewMessage",
+                type: "POST",
+                data: requestParam,
+                dataType: "JSON",
+                contentType: 'application/json',
+            })
+            .success(function (result) {
+                var html = '';
+                if (result.content.length != 0) {
+
+                    result.content.forEach((element) => {
+                        if (element.seq == that.lastMessageSeq) {
+                            return;
+                        }
+                    });
+
+                    $('#newMessage').innerHTML = '새 메시지가 ' + result.content.length + '건 도착했습니다.';
+                    $('#liveToast').css('display', 'block');
+                    that.list();
+                }
+            })
+            .error(function (e) {
+                alert("알 수 없는 오류가 발생했습니다.");
+            })
         }
 
         listView.list = function() {
@@ -95,40 +173,43 @@
                 dataType: "JSON",
                 contentType: 'application/json',
             })
-                .success(function (result) {
-                    var html = '';
-                    if (result.content.length == 0) {
-                        return;
+            .success(function (result) {
+                var html = '';
+                if (result.content.length == 0) {
+                    return;
+                }
+                result.content.forEach((element) => {
+                    html += '<tr';
+                    if (element.readYn == 'NO') {
+                        html += ' style="font-weight:bold";';
                     }
-                    result.content.forEach((element) => {
-                        html += '<tr';
-                        if (element.readYn == 'NO') {
-                            html += ' style="font-weight:bold";';
-                        }
-                        html += '>';
-                        html += '<td><input type="checkbox" data-seq="' + element.seq + '"></td>' +
-                            '<td>' + element.sender.nickname + '</td>\n' +
-                            '<td>' + element.content + '</td>\n' +
-                            '<td>' + element.sendDatetime + '</td></tr>';
-                    });
+                    html += '>';
+                    html += '<td><input type="checkbox" data-seq="' + element.seq + '"></td>' +
+                        '<td>' + element.sender.nickname + '</td>\n' +
+                        '<td><a href="/message/seq"' + element.content + '</td>\n' +
+                        '<td>' + element.sendDatetime + '</td></tr>';
+                });
 
-                    var page = '';
-                    for (var i = 0; i < result.totalPages; i++) {
-                        if (requestParam.page == (i + 1)) {
-                            page += '<li class="page-item">'
-                                + '<a class="page-link" href="#">' + (i + 1) + '</a>'
-                                + '</li>';
-                        } else {
-                            page += '<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>';
-                        }
+                that.lastMessageSeq = result.content.at(result.content.length - 1).seq;
+                that.isUpdated = false;
+
+                var page = '';
+                for (var i = 0; i < result.totalPages; i++) {
+                    if (requestParam.page == (i + 1)) {
+                        page += '<li class="page-item">'
+                            + '<a class="page-link" href="#">' + (i + 1) + '</a>'
+                            + '</li>';
+                    } else {
+                        page += '<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>';
                     }
+                }
 
-                    $("#messageSection").html(html);
-                    $("ul#pagination").html(page);
-                })
-                .error(function (result) {
-                    alert("알 수 없는 오류가 발생했습니다.");
-                })
+                $("#messageSection").html(html);
+                $("ul#pagination").html(page);
+            })
+            .error(function (result) {
+                alert("알 수 없는 오류가 발생했습니다.");
+            })
         };
 
         listView.sendBtnClick = function() {

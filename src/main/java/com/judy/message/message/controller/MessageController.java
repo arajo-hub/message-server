@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import static com.judy.message.common.code.CommonCode.SESSION_MEMBER_KEY;
@@ -39,6 +40,11 @@ public class MessageController {
     @PostMapping("/send")
     public ResponseEntity<SingleResponse> send(@RequestBody MessageSend messageSend) {
         return messageService.sendMessage(messageSend);
+    }
+
+    @PostMapping("/getNewMessage")
+    public ResponseEntity<Page<MessageView>> getNewMessage(HttpServletRequest req, @RequestBody MessageSearch messageSearch) {
+        return messageService.getNewMessage(messageSearch.getSeq());
     }
 
 }

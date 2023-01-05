@@ -88,4 +88,11 @@ public class MessageServiceImpl implements MessageService {
         return response;
     }
 
+    @Override
+    public ResponseEntity<Page<MessageView>> getNewMessage(Long seq) {
+        Page<MessageView> messageViewPages = messageRepository.findNewMessage(seq);
+        ResponseEntity<Page<MessageView>> response = ResponseEntity.ok(messageViewPages);
+        return response;
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.judy.message.message.repository;
 
 import com.judy.message.message.entity.Message;
+import com.judy.message.message.entity.ReadYn;
 import com.judy.message.message.response.MessageView;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -75,7 +76,7 @@ public class MessageRepository {
     }
 
     public Page<MessageView> findByPage(String nickname, Pageable pageable) {
-        List<Message> posts = queryFactory.selectFrom(message)
+        List<Message> messages = queryFactory.selectFrom(message)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(message.sendDatetime.desc())
@@ -84,9 +85,30 @@ public class MessageRepository {
                 .from(message)
                 .fetchOne();
         List<MessageView> messageViews = new ArrayList<MessageView>();
-        for (int i = 0; i < posts.size(); i++) {
-            messageViews.add(posts.get(i).toMessageView());
+        for (int i = 0; i < messages.size(); i++) {
+            messageViews.add(messages.get(i).toMessageView());
         }
         return new PageImpl<>(messageViews, pageable, count);
+    }
+
+    public Page<MessageView> findNewMessage(Long seq) {
+        List<Message> messages = queryFactory.selectFrom(message)
+                .where(isAfterMessage(seq))
+                .where(notReadYet())
+                .orderBy(message.sendDatetime.desc())
+                .fetch();
+        List<MessageView> messageViews = new ArrayList<MessageView>();
+        for (int i = 0; i < messages.size(); i++) {
+            messageViews.add(messages.get(i).toMessageView());
+        }
+        return new PageImpl<>(messageViews);
+    }
+
+    private BooleanExpression isAfterMessage(Long seq) {
+        return ObjectUtils.isEmpty(seq) ? null : message.seq.gt(seq);
+    }
+
+    private BooleanExpression notReadYet() {
+        return message.readYn.eq(ReadYn.NO);
     }
 }

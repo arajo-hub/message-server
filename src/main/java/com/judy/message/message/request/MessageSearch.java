@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 public class MessageSearch {
 
+    private Long seq;
     private int page;
     private int size;
 

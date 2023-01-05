@@ -32,8 +32,7 @@ public class Message {
     private ReadYn readYn;
 
     @Builder
-    public Message(Long seq, String content, Member sender, Member recipient, LocalDateTime sendDatetime, ReadYn readYn) {
-        this.seq = seq;
+    public Message(String content, Member sender, Member recipient, LocalDateTime sendDatetime, ReadYn readYn) {
         this.content = content;
         this.sender = sender;
         this.recipient = recipient;
@@ -43,6 +42,7 @@ public class Message {
 
     public MessageView toMessageView() {
         return MessageView.builder()
+                .seq(seq)
                 .content(content)
                 .sender(sender.toMemberView())
                 .sendDatetime(sendDatetime)
