@@ -6,6 +6,7 @@ import com.judy.message.common.response.SingleResponse;
 import com.judy.message.member.entity.Member;
 import com.judy.message.member.service.MemberService;
 import com.judy.message.message.entity.Message;
+import com.judy.message.message.entity.ReadYn;
 import com.judy.message.message.repository.MessageRepository;
 import com.judy.message.message.request.MessageSave;
 import com.judy.message.message.request.MessageSend;
@@ -93,6 +94,20 @@ public class MessageServiceImpl implements MessageService {
         Page<MessageView> messageViewPages = messageRepository.findNewMessage(seq);
         ResponseEntity<Page<MessageView>> response = ResponseEntity.ok(messageViewPages);
         return response;
+    }
+
+    @Override
+    public ResponseEntity<SingleResponse> getSingleMessage(Long seq) {
+        Message message = messageRepository.getSingleMessage(seq);
+        if (ReadYn.NO.equals(message.getReadYn())) {
+            messageRepository.changeReadYnToY(seq);
+        }
+        SingleResponse body = SingleResponse.builder()
+                .resultCode(Result.SUCCESS.getResultCode())
+                .resultMessage(Result.SUCCESS.getResultMessage())
+                .data(message)
+                .build();
+        return ResponseEntity.ok(body);
     }
 
 }

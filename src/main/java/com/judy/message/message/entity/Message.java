@@ -50,4 +50,7 @@ public class Message {
                 .build();
     }
 
+    public void changeReadToY() {
+        this.readYn = ReadYn.YES;
+    }
 }

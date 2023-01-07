@@ -111,4 +111,16 @@ public class MessageRepository {
     private BooleanExpression notReadYet() {
         return message.readYn.eq(ReadYn.NO);
     }
+
+    public Message getSingleMessage(Long seq) {
+        return em.find(Message.class, seq);
+    }
+
+    public void changeReadYnToY(Long seq) {
+        queryFactory.update(message)
+                .set(message.readYn, ReadYn.YES)
+                .where(isEqualsToMessageSeq(seq))
+                .execute();
+    }
+
 }

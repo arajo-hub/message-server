@@ -26,4 +26,5 @@ public interface MessageService {
 
     ResponseEntity<Page<MessageView>> getNewMessage(Long seq);
 
+    ResponseEntity<SingleResponse> getSingleMessage(Long seq);
 }

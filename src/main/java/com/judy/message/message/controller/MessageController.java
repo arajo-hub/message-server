@@ -43,8 +43,13 @@ public class MessageController {
     }
 
     @PostMapping("/getNewMessage")
-    public ResponseEntity<Page<MessageView>> getNewMessage(HttpServletRequest req, @RequestBody MessageSearch messageSearch) {
-        return messageService.getNewMessage(messageSearch.getSeq());
+    public ResponseEntity<Page<MessageView>> getNewMessage(HttpServletRequest req, Long seq) {
+        return messageService.getNewMessage(seq);
+    }
+
+    @PostMapping("/{seq}")
+    public ResponseEntity<SingleResponse> getSingleMessage(@PathVariable Long seq) {
+        return messageService.getSingleMessage(seq);
     }
 
 }
