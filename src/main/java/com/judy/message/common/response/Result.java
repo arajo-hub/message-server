@@ -7,7 +7,8 @@ import lombok.Setter;
 public enum Result {
 
     SUCCESS("200", "success"),
-    NOT_FOUND("404", "not found");
+    NOT_FOUND("404", "not found"),
+    TOO_MANY_REQUESTS("429", "too many request");
 
     private String resultCode;
     private String resultMessage;

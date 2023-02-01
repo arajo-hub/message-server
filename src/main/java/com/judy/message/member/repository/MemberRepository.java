@@ -34,7 +34,7 @@ public class MemberRepository {
     public Member findByNickname(String nickname) {
         return queryFactory.selectFrom(member)
                 .where(isEqualsToNickname(nickname))
-                .fetchOne();
+                .fetchFirst();
     }
 
     private BooleanExpression isEqualsToNickname(String nickname) {
