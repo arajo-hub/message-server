@@ -32,7 +32,7 @@ class MemberServiceTest {
     void join() {
         MemberJoin memberJoin = MemberJoin.builder()
                                             .nickname("홍길동")
-                                            .password("test1234")
+                                            .password("!Test1234")
                                             .build();
         ResponseEntity<MemberView>  response = memberService.join(memberJoin);
 
@@ -42,7 +42,7 @@ class MemberServiceTest {
     @Test
     @DisplayName("닉네임으로 회원정보 조회")
     void findByNickname() {
-        Member member = Member.builder().nickname("홍길동").password("test1234").build();
+        Member member = Member.builder().nickname("홍길동").password("!Test1234").build();
         memberRepository.join(member);
 
         String nickname = "홍길동";
@@ -54,7 +54,7 @@ class MemberServiceTest {
     @Test
     @DisplayName("닉네임으로 회원정보 like 검색")
     void findLikeNickname() {
-        Member member = Member.builder().nickname("홍길동").password("test1234").build();
+        Member member = Member.builder().nickname("홍길동").password("!Test1234").build();
         memberRepository.join(member);
 
         String keyword = "길";
